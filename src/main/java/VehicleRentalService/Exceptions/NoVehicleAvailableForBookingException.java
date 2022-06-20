@@ -1,2 +1,4 @@
-package VehicleRentalService.Exceptions;public class NoVehicleAvailableForBookingException {
+package VehicleRentalService.Exceptions;
+
+public class NoVehicleAvailableForBookingException extends RuntimeException{
 }

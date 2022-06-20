@@ -1,2 +1,4 @@
-package VehicleRentalService.Exceptions;public class BranchNotFoundException {
+package VehicleRentalService.Exceptions;
+
+public class BranchNotFoundException extends RuntimeException{
 }
