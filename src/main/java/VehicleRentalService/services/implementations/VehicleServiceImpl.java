@@ -7,17 +7,16 @@ import VehicleRentalService.models.VehicleType;
 import VehicleRentalService.services.VehicleService;
 import VehicleRentalService.strategy.LowestRentalPriceStrategy;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class VehicleServiceImpl implements VehicleService {
-    private Map<VehicleType, List<Vehicle>> vehicles;
+    private Map<VehicleType, List<Vehicle>> availableVehicles;
     private LowestRentalPriceStrategy lowestRentalPriceStrategy;
+    private Map<VehicleType, List<Vehicle>> bookedVehicles;
 
     public VehicleServiceImpl(LowestRentalPriceStrategy lowestRentalPriceStrategy) {
-        this.vehicles = new HashMap<>();
+        this.availableVehicles = new HashMap<>();
+        this.bookedVehicles = new HashMap<>();
         this.lowestRentalPriceStrategy = lowestRentalPriceStrategy;
     }
 
@@ -30,20 +29,36 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public Vehicle getLowestPriceVehicle(String vehicleType, Slot slot) {
-        List<Vehicle> vehicleCandidates = vehicles.get(VehicleType.valueOf(vehicleType));
-        removeUnavailableVehicles(vehicleCandidates, slot);
-        if(vehicleCandidates.isEmpty()){
+        List<Vehicle> vehicleCandidates = availableVehicles.get(VehicleType.valueOf(vehicleType));
+        List<Vehicle> availableVehicles = removeUnavailableVehicles(vehicleCandidates, slot);
+        if(availableVehicles.isEmpty()){
             return null;
         }
-        return lowestRentalPriceStrategy.getLowestRentalVehicle(vehicleCandidates, VehicleType.valueOf(vehicleType));
+        return lowestRentalPriceStrategy.getLowestRentalVehicle(availableVehicles, VehicleType.valueOf(vehicleType));
     }
 
-    private void removeUnavailableVehicles(List<Vehicle> vehicleCandidates, Slot slot) {
-        vehicleCandidates.removeIf(vehicle -> vehicle.getBookedSlots().contains(slot));
+    private List<Vehicle> removeUnavailableVehicles(List<Vehicle> vehicleCandidates, Slot slot) {
+        List<Vehicle> availableVehicles = new ArrayList<>();
+        for(Vehicle vehicle : vehicleCandidates){
+            Optional<Slot> optionalBookedSlot = vehicle.getBookedSlots().stream().filter(bslot -> bslot.getStartTime() == slot.getStartTime() && bslot.getEndTime() == slot.getEndTime()).findAny();
+            if(optionalBookedSlot.isEmpty()){
+                availableVehicles.add(vehicle);
+            }
+        }
+        return availableVehicles;
     }
 
     private void addVehicleByType(VehicleType type, Vehicle vehicle) {
-        vehicles.computeIfAbsent(type, k -> new ArrayList<>());
-        vehicles.get(type).add(vehicle);
+        availableVehicles.computeIfAbsent(type, k -> new ArrayList<>());
+        availableVehicles.get(type).add(vehicle);
+    }
+
+    public void addVehicleInBookedVehicles(VehicleType type, Vehicle vehicle){
+        bookedVehicles.computeIfAbsent(type, k -> new ArrayList<>());
+        bookedVehicles.get(type).add(vehicle);
+    }
+
+    public void removeVehicleFromAvailableVehicles(VehicleType type, Vehicle vehicle){
+        availableVehicles.get(type).remove(vehicle);
     }
 }

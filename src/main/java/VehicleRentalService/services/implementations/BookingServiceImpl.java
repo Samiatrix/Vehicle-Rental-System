@@ -12,11 +12,9 @@ import java.util.Map;
 public class BookingServiceImpl implements BookingService {
     private Map<String, Booking> bookings;
     private VehicleService vehicleService;
-    private BranchService branchService;
 
-    public BookingServiceImpl(VehicleService vehicleService, BranchService branchService) {
+    public BookingServiceImpl(VehicleService vehicleService) {
         this.vehicleService = vehicleService;
-        this.branchService = branchService;
         this.bookings = new HashMap<>();
     }
 

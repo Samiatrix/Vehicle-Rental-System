@@ -19,7 +19,7 @@ public class Main {
         LowestRentalPriceStrategy lowestRentalPriceStrategy = new LowestRentalPriceStrategyImpl();
         BranchService branchService = new BranchServiceImpl();
         VehicleService vehicleService = new VehicleServiceImpl(lowestRentalPriceStrategy);
-        BookingService bookingService = new BookingServiceImpl(vehicleService, branchService);
+        BookingService bookingService = new BookingServiceImpl(vehicleService);
         BranchController branchController = new BranchController(branchService);
         VehicleController vehicleController = new VehicleController(vehicleService, branchService);
         BookingController bookingController = new BookingController(vehicleService, branchService, bookingService);
@@ -51,6 +51,9 @@ public class Main {
         vehicleController.addVehicle("vehicle9", "Hatchback", "Kashmere Gate");
 
         String bookingId1 = bookingController.bookVehicle("Sedan", 1, 2);
+        String bookingId2 = bookingController.bookVehicle("Sedan", 1, 2);
+        String bookingId3 = bookingController.bookVehicle("Sedan", 1, 2);
+        String bookingId4 = bookingController.bookVehicle("Sedan", 1, 2);
 
 
     }
