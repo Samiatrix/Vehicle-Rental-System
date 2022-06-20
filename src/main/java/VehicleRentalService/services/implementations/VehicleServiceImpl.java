@@ -10,13 +10,11 @@ import VehicleRentalService.strategy.LowestRentalPriceStrategy;
 import java.util.*;
 
 public class VehicleServiceImpl implements VehicleService {
-    private Map<VehicleType, List<Vehicle>> availableVehicles;
+    private Map<VehicleType, List<Vehicle>> vehicles;
     private LowestRentalPriceStrategy lowestRentalPriceStrategy;
-    private Map<VehicleType, List<Vehicle>> bookedVehicles;
 
     public VehicleServiceImpl(LowestRentalPriceStrategy lowestRentalPriceStrategy) {
-        this.availableVehicles = new HashMap<>();
-        this.bookedVehicles = new HashMap<>();
+        this.vehicles = new HashMap<>();
         this.lowestRentalPriceStrategy = lowestRentalPriceStrategy;
     }
 
@@ -29,7 +27,7 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public Vehicle getLowestPriceVehicle(String vehicleType, Slot slot) {
-        List<Vehicle> vehicleCandidates = availableVehicles.get(VehicleType.valueOf(vehicleType));
+        List<Vehicle> vehicleCandidates = vehicles.get(VehicleType.valueOf(vehicleType));
         List<Vehicle> availableVehicles = removeUnavailableVehicles(vehicleCandidates, slot);
         if(availableVehicles.isEmpty()){
             return null;
@@ -49,16 +47,7 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     private void addVehicleByType(VehicleType type, Vehicle vehicle) {
-        availableVehicles.computeIfAbsent(type, k -> new ArrayList<>());
-        availableVehicles.get(type).add(vehicle);
-    }
-
-    public void addVehicleInBookedVehicles(VehicleType type, Vehicle vehicle){
-        bookedVehicles.computeIfAbsent(type, k -> new ArrayList<>());
-        bookedVehicles.get(type).add(vehicle);
-    }
-
-    public void removeVehicleFromAvailableVehicles(VehicleType type, Vehicle vehicle){
-        availableVehicles.get(type).remove(vehicle);
+        vehicles.computeIfAbsent(type, k -> new ArrayList<>());
+        vehicles.get(type).add(vehicle);
     }
 }
